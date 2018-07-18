@@ -28,7 +28,7 @@ except ImportError:
     from msm import MycroftSkillsManager
 
     msm = MycroftSkillsManager()
-    msm.install("https://github.com/ITE-5th/skill-question-answering")
+    msm.install("https://github.com/ITE-5th/skill-object-recognizer")
 
 
 class ObjectRecognizerSkill(MycroftSkill):
