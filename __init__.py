@@ -30,6 +30,9 @@ except ImportError:
     msm = MycroftSkillsManager()
     msm.install("https://github.com/ITE-5th/skill-object-recognizer")
 
+COUNT = 'count'
+OBJECT = 'object'
+
 
 class ObjectRecognizerSkill(MycroftSkill):
     def __init__(self):
@@ -97,13 +100,19 @@ class ObjectRecognizerSkill(MycroftSkill):
 
             result = self.handle_message(response.get('result'), object_name)
             # Speak Result
-            if result:
-                if everything:
-                    self.speak_dialog("ResultAll", result)
-                else:
-                    self.speak_dialog("ResultSingle", result)
+            if not response:
+                self.speak_dialog("NoResultAll")
             else:
-                self.speak_dialog("NoResult", result)
+                if result:
+                    if everything and result['result']:
+                        self.speak_dialog("ResultAll", result)
+                    elif result[COUNT]:
+                        self.speak_dialog("ResultSingle", result)
+                    else:
+                        self.speak_dialog("NoResult", result)
+                else:
+                    self.speak_dialog("NoResultAll")
+
 
         except LookupError as e:
             self.speak_dialog('GetObjectError')
@@ -132,13 +141,13 @@ class ObjectRecognizerSkill(MycroftSkill):
 
         if desired_object:
             desired_object = self.p.singular_noun(desired_object).strip().lower()
+            object_count = response[desired_object]
             return {
-                'object': desired_object,
-                'count': response[desired_object]
+                OBJECT: desired_object,
+                COUNT: object_count if object_count else None
             }
 
         else:
-
             result = ["{} {}".format(value, self.p.plural(key, value.capitalize())) for key, value in response.items()]
             return {'result': ",".join(result)}
 
