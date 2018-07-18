@@ -1,0 +1,25 @@
+{
+  "name": "Object Recognizer Skill",
+  "skillMetadata": {
+    "sections": [
+      {
+        "name": "Settings",
+        "fields": [
+          {
+            "name": "connection_type",
+            "type": "select",
+            "label": "Connection Type",
+            "options": "Socket|socket;HTTP|http",
+            "value": "socket"
+          },
+          {
+            "name": "server_url",
+            "type": "text",
+            "label": "Remote Server URL:",
+            "value": "192.168.43.71"
+          }
+        ]
+      }
+    ]
+  }
+}
