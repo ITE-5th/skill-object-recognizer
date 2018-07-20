@@ -169,16 +169,16 @@ class ObjectRecognizerSkill(MycroftSkill):
             # search for single and plural
             single = self.p.singular_noun(desired_object) or desired_object
             plural = self.p.plural(single)
-            print(single)
-            print(plural)
             object_count = response_dic.get(single) or response_dic.get(plural)
-
+            print(object_count)
             if object_count is None:
                 d_sum = sum([value for _, value in response_dic.items()])
+                print(d_sum)
             else:
                 # same element found
                 d_sum = object_count
                 d_result = "{} {}".format(d_sum, self.p.plural(single, d_sum))
+                print(d_result)
                 return {
                     'd_result': d_result
                 }
