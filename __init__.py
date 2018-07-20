@@ -178,12 +178,17 @@ class ObjectRecognizerSkill(MycroftSkill):
                 # same element found
                 d_sum = object_count
                 d_result = "{} {}".format(d_sum, self.p.plural(single, d_sum))
+                print('d_result')
                 print(d_result)
                 return {
                     'd_result': d_result
                 }
             # d_result = "{} {}".format(d_sum, self.p.plural(single, d_sum))
             d_result = desired_object
+            print('d_result')
+            print(d_result)
+            print('response')
+            print(response)
             return {
                 'result': response,
                 'd_result': d_result,
