@@ -132,6 +132,9 @@ class ObjectRecognizerSkill(MycroftSkill):
             #         self.speak_dialog("NoResultAll")
 
         except LookupError as e:
+            LOG.info(str(e))
+            LOG.info(str(traceback.format_exc()))
+
             self.speak_dialog('GetObjectError')
 
         except ConnectionError as e:
