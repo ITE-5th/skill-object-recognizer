@@ -76,12 +76,12 @@ class ObjectRecognizerSkill(MycroftSkill):
         return True
 
     @intent_handler(IntentBuilder("ORIntent").require('Count').optionally('Object').optionally('Everything'))
-    def answer(self, message):
+    def count(self, message):
         try:
 
             print(message.data)
-            object_name = None
             everything = True if message.data.get("Everything", None) else False
+            object_name = ''
             if not everything:
                 # Search for the object
                 object_name = message.data.get("Object", None)
@@ -93,26 +93,43 @@ class ObjectRecognizerSkill(MycroftSkill):
                     object_name = self.get_phrase()
 
             image, _ = self.camera.take_image()
-            msg = ObjectRecognitionMessage(image=image)
+            msg = ObjectRecognitionMessage(image=image, object_name=object_name)
             self.ensure_send(msg)
-            response = self.receiver.receive()
+            response = self.receiver.receive().get('result')
             LOG.info(response)
 
-            result = self.handle_message(response.get('result'), object_name)
             # Speak Result
-            if not response:
-                self.speak_dialog("NoResultAll")
-            else:
-                if result:
-                    if everything and result['result']:
-                        self.speak_dialog("ResultAll", result)
-                    elif result[COUNT]:
-                        self.speak_dialog("ResultSingle", result)
-                    else:
-                        self.speak_dialog("NoResult", result)
+            if everything:
+                if response in ['', '-1']:
+                    self.speak_dialog("NoResultFound")
                 else:
-                    self.speak_dialog("NoResultAll")
+                    result = self.handle_message(response)
+                    self.speak_dialog("ResultAll", result)
+            else:
+                if response == '-1':
+                    self.speak_dialog("CantSearch", {'object': object_name})
+                elif response == '':
+                    self.speak_dialog("NotFound", {'object': object_name})
+                else:
+                    result = self.handle_message(response, object_name)
+                    if result['result']:
+                        self.speak_dialog("ResultSimilar", result)
+                    else:
+                        self.speak_dialog("ResultSingle", result)
 
+            # if not response:
+            #     self.speak_dialog("NoResultAll")
+            # else:
+            #     result = self.handle_message(response, object_name)
+            #     if result:
+            #         if everything and result['result']:
+            #             self.speak_dialog("ResultAll", result)
+            #         elif result[COUNT]:
+            #             self.speak_dialog("ResultSingle", result)
+            #         else:
+            #             self.speak_dialog("NoResult", result)
+            #     else:
+            #         self.speak_dialog("NoResultAll")
 
         except LookupError as e:
             self.speak_dialog('GetObjectError')
@@ -135,21 +152,35 @@ class ObjectRecognizerSkill(MycroftSkill):
         :param response: string of answers
         :return: dictionary contains sentence in result
         """
-
         if not response:
             return None
-
-        if desired_object:
-            desired_object = self.p.singular_noun(desired_object).strip().lower()
-            object_count = response[desired_object]
+        # convert to dict
+        if desired_object is None:
             return {
-                OBJECT: desired_object,
-                COUNT: object_count if object_count else None
+                'result': response,
             }
-
         else:
-            result = ["{} {}".format(value, self.p.plural(key, value.capitalize())) for key, value in response.items()]
-            return {'result': ",".join(result)}
+
+            response_dic = {item.split()[1]: int(item.split()[0]) for item in response.split(",")}
+            # search for single and plural
+            single = self.p.singular_noun(desired_object) or desired_object
+            plural = self.p.plural(single)
+            object_count = response_dic.get(single) or response_dic.get(plural)
+
+            if object_count is None:
+                d_sum = sum([value for _, value in response_dic.items()])
+            else:
+                # same element found
+                d_sum = object_count
+                d_result = "{} {}".format(d_sum, self.p.plural(single, d_sum))
+                return {
+                    'd_result': d_result
+                }
+            d_result = "{} {}".format(d_sum, self.p.plural(single, d_sum))
+            return {
+                'result': response,
+                'd_result': d_result,
+            }
 
     @staticmethod
     def get_phrase(lang='en-US'):
