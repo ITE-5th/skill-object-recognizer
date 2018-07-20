@@ -169,6 +169,8 @@ class ObjectRecognizerSkill(MycroftSkill):
             # search for single and plural
             single = self.p.singular_noun(desired_object) or desired_object
             plural = self.p.plural(single)
+            print(single)
+            print(plural)
             object_count = response_dic.get(single) or response_dic.get(plural)
 
             if object_count is None:
