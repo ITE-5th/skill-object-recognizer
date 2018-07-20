@@ -84,13 +84,13 @@ class ObjectRecognizerSkill(MycroftSkill):
             object_name = ''
             if not everything:
                 # Search for the object
-                object_name = message.data.get("Object", None)
+                object_name = message.data.get("Object", None).strip()
                 if object_name is not None:
                     utterance = message.data.get('utterance', '')
                     object_name = ''.join(utterance.split('count'))
                 else:
                     self.speak_dialog('GetObject')
-                    object_name = self.get_phrase()
+                    object_name = self.get_phrase().strip()
 
             image, _ = self.camera.take_image()
             msg = ObjectRecognitionMessage(image=image, object_name=object_name)
