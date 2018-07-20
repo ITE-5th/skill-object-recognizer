@@ -111,6 +111,7 @@ class ObjectRecognizerSkill(MycroftSkill):
                 elif response == '':
                     self.speak_dialog("NotFound", {'object': object_name})
                 else:
+                    LOG.info(object_name)
                     result = self.handle_message(response, object_name)
                     if result['result']:
                         self.speak_dialog("ResultSimilar", result)
