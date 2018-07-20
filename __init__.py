@@ -180,7 +180,8 @@ class ObjectRecognizerSkill(MycroftSkill):
                 return {
                     'd_result': d_result
                 }
-            d_result = "{} {}".format(d_sum, self.p.plural(single, d_sum))
+            # d_result = "{} {}".format(d_sum, self.p.plural(single, d_sum))
+            d_result = desired_object
             return {
                 'result': response,
                 'd_result': d_result,
