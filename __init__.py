@@ -113,6 +113,8 @@ class ObjectRecognizerSkill(MycroftSkill):
                 else:
                     LOG.info(object_name)
                     result = self.handle_message(response, object_name)
+                    LOG.info(result)
+
                     if result['result']:
                         self.speak_dialog("ResultSimilar", result)
                     else:
@@ -189,8 +191,8 @@ class ObjectRecognizerSkill(MycroftSkill):
             print('response')
             print(response)
             return {
-                'result': response,
                 'Dresult': d_result,
+                'result': response
             }
 
     @staticmethod
