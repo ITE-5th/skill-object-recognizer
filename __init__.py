@@ -95,9 +95,9 @@ class ObjectRecognizerSkill(MycroftSkill):
             image, _ = self.camera.take_image()
             msg = ObjectRecognitionMessage(image=image, object_name=object_name)
             self.ensure_send(msg)
-            response = self.receiver.receive().get('result')
+            response = self.receiver.receive()
             LOG.info(response)
-
+            response = response.get('result')
             # Speak Result
             if everything:
                 if response in ['', '-1']:
